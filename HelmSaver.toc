@@ -1,0 +1,6 @@
+## Interface: 50000
+## Title: HelmSaver
+## Notes: Helm and cloak visiblity settings for equipment manager
+## Author: d87
+## SavedVariablesPerCharacter: HelmSaverDB_Character
+HelmSaver.lua

@@ -1,27 +1,27 @@
-NugEMExt = CreateFrame("Frame","NugEMExt")
+HelmSaver = CreateFrame("Frame","HelmSaver")
 
-NugEMExt:SetScript("OnEvent", function(self, event, ...)
+HelmSaver:SetScript("OnEvent", function(self, event, ...)
 	self[event](self, event, ...)
 end)
-NugEMExt:RegisterEvent("ADDON_LOADED")
+HelmSaver:RegisterEvent("ADDON_LOADED")
 
-function NugEMExt.Update()
-    local helm = NugEMExt.hcb:GetChecked()
-    local cloak = NugEMExt.ccb:GetChecked()
+function HelmSaver.Update()
+    local helm = HelmSaver.hcb:GetChecked()
+    local cloak = HelmSaver.ccb:GetChecked()
     ShowHelm(helm)
     ShowCloak(cloak)
 end
 
-local NugEMExtDB
-function NugEMExt.ADDON_LOADED(self,event,arg1)
-    if arg1 ~= "NugEMExt" then return end
+local HelmSaverDB
+function HelmSaver.ADDON_LOADED(self,event,arg1)
+    if arg1 ~= "HelmSaver" then return end
     
-    NugEMExtDB_Character = NugEMExtDB_Character or {}
-    NugEMExtDB = NugEMExtDB_Character
+    HelmSaverDB_Character = HelmSaverDB_Character or {}
+    HelmSaverDB = HelmSaverDB_Character
     
     
     local OnCheckBoxClick = function()
-        NugEMExt.Update()
+        HelmSaver.Update()
         if PaperDollEquipmentManagerPane.selectedSetName then
             PaperDollEquipmentManagerPaneSaveSet:Enable()
             PaperDollEquipmentManagerPaneEquipSet:Enable();
@@ -33,35 +33,35 @@ function NugEMExt.ADDON_LOADED(self,event,arg1)
     hcb:SetPoint("RIGHT",CharacterHeadSlotPopoutButton,"LEFT",-13,0)
     hcb:SetScript("OnClick",OnCheckBoxClick)
     hcb:SetChecked(ShowingHelm())
-    NugEMExt.hcb = hcb
+    HelmSaver.hcb = hcb
     
     local ccb = CreateFrame("CheckButton",nil,CharacterBackSlotPopoutButton,"UICheckButtonTemplate")
     ccb:SetWidth(26); ccb:SetHeight(26);
     ccb:SetPoint("RIGHT",CharacterBackSlotPopoutButton,"LEFT",-13,0)
     ccb:SetScript("OnClick",OnCheckBoxClick)
     ccb:SetChecked(ShowingCloak())
-    NugEMExt.ccb = ccb
+    HelmSaver.ccb = ccb
     
     hooksecurefunc("GearSetButton_OnClick",function(self,btn)
         PaperDollEquipmentManagerPaneEquipSet:Enable();
     end)
     
     hooksecurefunc("UseEquipmentSet", function(name)
-        if NugEMExtDB[name] then
-            hcb:SetChecked(NugEMExtDB[name]["helm"])
-            ccb:SetChecked(NugEMExtDB[name]["cloak"])
-            NugEMExt.Update()
+        if HelmSaverDB[name] then
+            hcb:SetChecked(HelmSaverDB[name]["helm"])
+            ccb:SetChecked(HelmSaverDB[name]["cloak"])
+            HelmSaver.Update()
         end
     end)
     
     hooksecurefunc("SaveEquipmentSet", function(name,icon)
-        NugEMExtDB[name] = NugEMExtDB[name] or {}
-        NugEMExtDB[name]["helm"] = hcb:GetChecked()
-        NugEMExtDB[name]["cloak"] = ccb:GetChecked()
+        HelmSaverDB[name] = HelmSaverDB[name] or {}
+        HelmSaverDB[name]["helm"] = hcb:GetChecked()
+        HelmSaverDB[name]["cloak"] = ccb:GetChecked()
     end)
     
     hooksecurefunc("DeleteEquipmentSet", function(name)
-        NugEMExtDB[name] = nil
+        HelmSaverDB[name] = nil
     end)
     
 end

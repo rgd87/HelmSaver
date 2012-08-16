@@ -1,6 +1,0 @@
-## Interface: 40100
-## Title: NugEMExt
-## Notes: Helm and cloak visiblity settings for equipment manager
-## Author: d87
-## SavedVariablesPerCharacter: NugEMExtDB_Character
-NugEMExt.lua
