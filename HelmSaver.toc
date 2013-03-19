@@ -1,4 +1,4 @@
-## Interface: 50000
+## Interface: 50200
 ## Title: HelmSaver
 ## Notes: Helm and cloak visiblity settings for equipment manager
 ## Author: d87
