@@ -4,4 +4,9 @@
 ## Author: d87, Roadblock (Classic)
 ## SavedVariablesPerCharacter: HelmSaverDB_Character
 ## Version: 40400.1
+
+## X-Website: https://github.com/rgd87/HelmSaver
+## X-WoWI-ID: 19713
+## X-Curse-Project-ID: 43421
+
 HelmSaver.lua
