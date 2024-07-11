@@ -1,73 +1,74 @@
-HelmSaver = CreateFrame("Frame","HelmSaver")
+local addonName, addon = ...
+addon.evt = CreateFrame("Frame")
+addon.OnEvents = function(self, event, ...)
+  return addon[event] and addon[event](addon,...)
+end
+addon.evt:SetScript("OnEvent",addon.OnEvents)
+addon.evt:RegisterEvent("ADDON_LOADED")
 
-HelmSaver:SetScript("OnEvent", function(self, event, ...)
-	self[event](self, event, ...)
-end)
-HelmSaver:RegisterEvent("ADDON_LOADED")
-
-function HelmSaver.Update()
-    local helm = HelmSaver.hcb:GetChecked()
-    local cloak = HelmSaver.ccb:GetChecked()
-    ShowHelm(helm)
-    ShowCloak(cloak)
+function addon.Update()
+  local helm = addon.hcb:GetChecked()
+  local cloak = addon.ccb:GetChecked()
+  ShowHelm(helm)
+  ShowCloak(cloak)
 end
 
 local HelmSaverDB
-function HelmSaver.ADDON_LOADED(self,event,arg1)
-    if arg1 ~= "HelmSaver" then return end
-    
-    HelmSaverDB_Character = HelmSaverDB_Character or {}
-    HelmSaverDB = HelmSaverDB_Character
-    
-    
-    local OnCheckBoxClick = function()
-        HelmSaver.Update()
-        if PaperDollEquipmentManagerPane.selectedSetName then
-            PaperDollEquipmentManagerPaneSaveSet:Enable()
-            PaperDollEquipmentManagerPaneEquipSet:Enable();
-        end
+function addon:ADDON_LOADED(...)
+  if ... ~= addonName then return end
+
+  HelmSaverDB_Character = HelmSaverDB_Character or {}
+  HelmSaverDB = HelmSaverDB_Character
+
+
+  local OnCheckBoxClick = function()
+    addon.Update()
+    if (PaperDollFrame.EquipmentManagerPane:IsShown() and (PaperDollFrame.EquipmentManagerPane.selectedSetID or GearManagerPopupFrame:IsShown())) then
+      PaperDollFrameSaveSet:Enable()
+      PaperDollFrameEquipSet:Enable();
     end
-    
-    local hcb = CreateFrame("CheckButton",nil,CharacterHeadSlot,"UICheckButtonTemplate") -- CharacterHeadSlotPopoutButton to only show on EM screen
-    hcb:SetWidth(26); hcb:SetHeight(26);
-    hcb:SetPoint("RIGHT",CharacterHeadSlotPopoutButton,"LEFT",-13,0)
-    hcb:SetScript("OnClick",OnCheckBoxClick)
+  end
+
+  local hcb = CreateFrame("CheckButton",nil,CharacterHeadSlot,"UICheckButtonTemplate") -- CharacterHeadSlotPopoutButton to only show on EM screen
+  hcb:SetWidth(26); hcb:SetHeight(26);
+  hcb:SetPoint("RIGHT",CharacterHeadSlotPopoutButton,"LEFT",-13,0)
+  hcb:SetScript("OnClick",OnCheckBoxClick)
+  hcb:SetChecked(ShowingHelm())
+  addon.hcb = hcb
+
+  local ccb = CreateFrame("CheckButton",nil,CharacterBackSlot,"UICheckButtonTemplate")
+  ccb:SetWidth(26); ccb:SetHeight(26);
+  ccb:SetPoint("RIGHT",CharacterBackSlotPopoutButton,"LEFT",-13,0)
+  ccb:SetScript("OnClick",OnCheckBoxClick)
+  ccb:SetChecked(ShowingCloak())
+  addon.ccb = ccb
+
+  PaperDollFrame:HookScript("OnShow",function(self,btn)
     hcb:SetChecked(ShowingHelm())
-    HelmSaver.hcb = hcb
-    
-    local ccb = CreateFrame("CheckButton",nil,CharacterBackSlot,"UICheckButtonTemplate")
-    ccb:SetWidth(26); ccb:SetHeight(26);
-    ccb:SetPoint("RIGHT",CharacterBackSlotPopoutButton,"LEFT",-13,0)
-    ccb:SetScript("OnClick",OnCheckBoxClick)
     ccb:SetChecked(ShowingCloak())
-    HelmSaver.ccb = ccb
+  end)
 
-    PaperDollFrame:HookScript("OnShow",function(self,btn)
-        hcb:SetChecked(ShowingHelm())
-        ccb:SetChecked(ShowingCloak())
-    end)
 
-    
-    hooksecurefunc("GearSetButton_OnClick",function(self,btn)
-        PaperDollEquipmentManagerPaneEquipSet:Enable();
-    end)
-    
-    hooksecurefunc("UseEquipmentSet", function(name)
-        if HelmSaverDB[name] and not InCombatLockdown() then
-            hcb:SetChecked(HelmSaverDB[name]["helm"])
-            ccb:SetChecked(HelmSaverDB[name]["cloak"])
-            HelmSaver.Update()
-        end
-    end)
-    
-    hooksecurefunc("SaveEquipmentSet", function(name,icon)
-        HelmSaverDB[name] = HelmSaverDB[name] or {}
-        HelmSaverDB[name]["helm"] = hcb:GetChecked()
-        HelmSaverDB[name]["cloak"] = ccb:GetChecked()
-    end)
-    
-    hooksecurefunc("DeleteEquipmentSet", function(name)
-        HelmSaverDB[name] = nil
-    end)
-    
+  hooksecurefunc("GearSetButton_OnClick",function(self,btn)
+    PaperDollFrameEquipSet:Enable();
+  end)
+
+  hooksecurefunc(C_EquipmentSet, "UseEquipmentSet", function(name)
+    if HelmSaverDB[name] and not InCombatLockdown() then
+      hcb:SetChecked(HelmSaverDB[name]["helm"])
+      ccb:SetChecked(HelmSaverDB[name]["cloak"])
+      addon.Update()
+    end
+  end)
+
+  hooksecurefunc(C_EquipmentSet, "SaveEquipmentSet", function(name,icon)
+    HelmSaverDB[name] = HelmSaverDB[name] or {}
+    HelmSaverDB[name]["helm"] = hcb:GetChecked()
+    HelmSaverDB[name]["cloak"] = ccb:GetChecked()
+  end)
+
+  hooksecurefunc(C_EquipmentSet, "DeleteEquipmentSet", function(name)
+    HelmSaverDB[name] = nil
+  end)
+  
 end
